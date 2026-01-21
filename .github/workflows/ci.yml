@@ -1,0 +1,33 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker compose
+        run: |
+          if [ -f docker-compose.yml ] || [ -f compose.yml ]; then
+            docker compose config
+          else
+            echo "No compose file in root (ok)"
+          fi
+
+      - name: Terraform fmt/validate (if terraform/ exists)
+        uses: hashicorp/setup-terraform@v3
+      - run: |
+          if [ -d terraform ]; then
+            terraform fmt -check -recursive terraform
+            # validate needs init; do minimal init if there are *.tf files
+            if ls terraform/**/*.tf 1> /dev/null 2>&1 || ls terraform/*.tf 1> /dev/null 2>&1; then
+              (cd terraform && terraform init -backend=false && terraform validate)
+            else
+              echo "No .tf files yet (ok)"
+            fi
+          else
+            echo "No terraform/ directory (ok)"
+          fi

@@ -1,8 +1,14 @@
 # Contributing
 
-## Setup
-- Requirements: (node/python/go/dotnet version)
-- Copy `.env.example` to `.env`
+## Requirements
+- Docker + Docker Compose v2
+- (Optional later) Terraform
+
+## Run locally
+```bash
+docker compose up -d
+docker compose logs -f
+```
 
 ## Development
 - Install deps: `...`
